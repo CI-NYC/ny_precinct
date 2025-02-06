@@ -1,1 +1,0 @@
-# ny_precinct
