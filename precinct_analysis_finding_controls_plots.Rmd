@@ -1,0 +1,207 @@
+---
+title: "Finding Controls"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE, echo=FALSE)
+library(tidyverse)
+library(ggplot2)
+library(plotly)
+library(kableExtra)
+```
+
+## Plotting murder by year
+- "cases_avg" represents the average between precincts 43, 47, and 49
+
+### Among selected precincts (based on initial discussions)
+- Excluding 114 (Astoria)
+```{r, echo = FALSE}
+levels <- c("cases_avg", as.character(1:123))
+
+crimes_final <- readRDS(here::here("data/crimes_final.rds")) |>
+  filter(!is.na(case)) |>
+  mutate(PCT = factor(PCT, levels = c(levels)))
+
+cases_avg <- crimes_final |>
+  filter(PCT %in% c("43", "47", "49")) |>
+  group_by(year) |>
+  summarize(murder = mean(murder),
+         rape = mean(rape),
+         robbery = mean(rape),
+         assault = mean(assault),
+         shootings = mean(shootings)) |>
+  mutate(PCT = "cases_avg",
+         case = 1)
+
+crimes_final <- crimes_final |>
+  merge(cases_avg, all = TRUE) |>
+  filter(!(PCT %in% c("43", "47", "49")))
+
+crimes_final_limited <- crimes_final |>
+  filter(PCT %in% c("cases_avg", "40", "41", "42", "44", "45", "46", "48", "50", "52", "25", "30", "32", "33", "73", "75")) |>
+  filter(year <= 2013)
+
+colors_limited <- c("black", RColorBrewer::brewer.pal(19, "Paired"), "magenta3", "turquoise3", "yellow4")
+
+murder_plot_limited <- ggplot(crimes_final_limited, aes(x = factor(year), y = murder, color = PCT, group = PCT,
+                                                   text = paste("PCT:", PCT, "<br>Year:", year, "<br>Murder:", round(murder, 2)))) +
+  geom_line(size = 1, aes(text = paste0("PCT: ", PCT))) +  
+  geom_point(size = 2) + 
+  scale_color_manual(values = colors_limited) + 
+  theme_minimal() +      
+  labs(title = "Murder by year among selected precincts", x = "Year", y = "Murder")
+
+ggplotly(murder_plot_limited, tooltip = "text")
+```
+
+### Among likely control precincts
+```{r, echo = FALSE}
+crimes_final_likely_controls <- crimes_final |>
+  filter(PCT %in% c("cases_avg", "40", "41", "42", "44", "46", "48", "52", "25", "32", "73", "75",
+                    "60", "67", "69", "70", "71", "101", "103", "105", "113"#,
+                    #"23, "79", "81", "83                   
+                    )) |>
+  filter(year <= 2013)
+
+colors_limited <- c("black", RColorBrewer::brewer.pal(19, "Paired"), "magenta3", "turquoise3", "yellow4", "darkorange3", "chartreuse4", "slateblue3", "deeppink4", "cyan4", "goldenrod3")
+
+murder_plot_limited <- ggplot(crimes_final_likely_controls, aes(x = factor(year), y = murder, color = PCT, group = PCT,
+                                                   text = paste("PCT:", PCT, "<br>Year:", year, "<br>Murder:", round(murder, 2)))) +
+  geom_line(size = 1, aes(text = paste0("PCT: ", PCT))) +  
+  geom_point(size = 2) + 
+  scale_color_manual(values = colors_limited) + 
+  theme_minimal() +      
+  labs(title = "Murder by year among selected precincts", x = "Year", y = "Murder")
+
+ggplotly(murder_plot_limited, tooltip = "text")
+```
+
+
+### Among all precincts
+```{r}
+colors <- c(
+  "black", "blue", "green", "yellow", "purple", "orange", "pink", "brown", "gray", "steelblue2",
+  "cyan", "magenta", "lightblue", "lightgreen", "lightyellow", "lightpink", "lightgray", "lightcoral", "lightseagreen", "lightsteelblue",
+  "darkred", "darkblue", "darkgreen", "darkorange", "darkviolet", "darkslategray", "darkturquoise", "darkkhaki", "darkgray", "darkgoldenrod",
+  "chartreuse", "aquamarine", "aliceblue", "antiquewhite", "blanchedalmond", "burlywood", "cadetblue", "chartreuse3", "darkcyan", "darkorange2",
+  "seashell", "mediumseagreen", "mediumpurple", "lightblue", "lemonchiffon", "mistyrose", "lavender", "wheat", "slategray", "saddlebrown",
+  "mediumvioletred", "yellowgreen", "turquoise", "springgreen", "salmon", "royalblue", "rosybrown", "orangered", "orchid", "plum", "paleturquoise",
+  "forestgreen", "tan4", "lightsalmon", "indianred", "gold", "gainsboro", "dodgerblue", "crimson", "chartreuse2", "cadetblue2",
+  "lightpink1", "thistle", "skyblue", "snow", "mistyrose2", "maroon", "ivory", "honeydew", "goldenrod", "red"
+)
+# crimes_final_comparison <- crimes_final |>
+#   group_by(PCT) |>
+#   mutate(flag = ifelse(any(murder == 0), 1, 0)) |>
+#   filter(flag == 0)
+
+murder_plot_all <- ggplot(crimes_final |>
+  filter(year <= 2013), aes(x = factor(year), y = murder, color = PCT, group = PCT,
+                                                        text = paste("PCT:", PCT, "<br>Year:", year, "<br>Murder:", round(murder, 2)))) +
+  geom_line(size = 1, aes(text = paste0("PCT: ", PCT))) +  
+  geom_point(size = 2) + 
+  scale_color_manual(values = colors) + 
+  theme_minimal() +      
+  labs(title = "Murder by year among all precincts", x = "Year", y = "Murder")
+
+ggplotly(murder_plot_all, tooltip = "text")
+```
+
+### Slopes of murder across year for each precinct
+- Find similar slopes to "case_avg"
+```{r, echo = FALSE}
+# finding slopes by PCT
+slopes <- data.frame(PCT = character(), slope = numeric(), stringsAsFactors = FALSE)
+
+for(pct in unique(crimes_final$PCT)) {
+  group_data <- subset(crimes_final, PCT == pct)
+  model <- lm(murder ~ year, data = group_data)
+  slope <- coef(model)['year']
+  slopes <- rbind(slopes, data.frame(PCT = pct, slope = slope)) |>
+    arrange(slope)
+  rownames(slopes) <- NULL 
+}
+
+slopes |>
+  kbl() |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = F, position = "center")
+```
+
+## Plotting shootings by year
+- "case_avg" represents the average between precincts 43, 47, and 49
+
+### Among selected precincts (based on initial discussions)
+- Excluding 114 (Astoria)
+```{r, echo = FALSE}
+shootings_plot_limited <- ggplot(crimes_final_limited, aes(x = factor(year), y = shootings, color = PCT, group = PCT,
+                                                   text = paste("PCT:", PCT, "<br>Year:", year, "<br>shootings:", round(shootings, 2)))) +
+  geom_line(size = 1, aes(text = paste0("PCT: ", PCT))) +  
+  geom_point(size = 2) + 
+  scale_color_manual(values = colors_limited) + 
+  theme_minimal() +      
+  labs(title = "shootings by year among selected precincts", x = "Year", y = "shootings")
+
+ggplotly(shootings_plot_limited, tooltip = "text")
+```
+
+### Among likely controls
+```{r}
+# crimes_final_comparison <- crimes_final |>
+#   group_by(PCT) |>
+#   mutate(flag = ifelse(any(shootings == 0), 1, 0)) |>
+#   filter(flag == 0)
+
+shootings_plot_all <- ggplot(crimes_final_likely_controls |>
+  filter(year <= 2013), aes(x = factor(year), y = shootings, color = PCT, group = PCT,
+                                                        text = paste("PCT:", PCT, "<br>Year:", year, "<br>Shootings:", round(shootings, 2)))) +
+  geom_line(size = 1, aes(text = paste0("PCT: ", PCT))) +  
+  geom_point(size = 2) + 
+  scale_color_manual(values = colors) + 
+  theme_minimal() +      
+  labs(title = "Shootings by year among all precincts", x = "Year", y = "Shootings")
+
+ggplotly(shootings_plot_all, tooltip = "text")
+```
+
+### Among all precincts
+```{r}
+# crimes_final_comparison <- crimes_final |>
+#   group_by(PCT) |>
+#   mutate(flag = ifelse(any(shootings == 0), 1, 0)) |>
+#   filter(flag == 0)
+
+shootings_plot_all <- ggplot(crimes_final |>
+  filter(year <= 2013), aes(x = factor(year), y = shootings, color = PCT, group = PCT,
+                                                        text = paste("PCT:", PCT, "<br>Year:", year, "<br>Shootings:", round(shootings, 2)))) +
+  geom_line(size = 1, aes(text = paste0("PCT: ", PCT))) +  
+  geom_point(size = 2) + 
+  scale_color_manual(values = colors) + 
+  theme_minimal() +      
+  labs(title = "Shootings by year among all precincts", x = "Year", y = "Shootings")
+
+ggplotly(shootings_plot_all, tooltip = "text")
+```
+
+### Slopes of shootings across year for each precinct
+- Find similar slopes to "case_avg"
+```{r, echo = FALSE}
+# finding slopes by PCT
+slopes <- data.frame(PCT = character(), slope = numeric(), stringsAsFactors = FALSE)
+
+for(pct in unique(crimes_final$PCT)) {
+  group_data <- subset(crimes_final, PCT == pct) |>
+    filter(year >= 2006)
+  model <- lm(shootings ~ year, data = group_data)
+  slope <- coef(model)['year']
+  slopes <- rbind(slopes, data.frame(PCT = pct, slope = slope)) |>
+    arrange(slope)
+  rownames(slopes) <- NULL 
+}
+
+slopes |>
+  kbl() |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = F, position = "center")
+```
+

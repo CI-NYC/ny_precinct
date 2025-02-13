@@ -66,7 +66,7 @@ crimes_final <- crimes_final |>
                           TRUE ~ 0)) |>
   filter(!(PCT %in% c("120", "121", "122", "77", "78", "88", "DOC", "22"))) |> # removing precincts that have changed/not relevant
   filter(year >= 2004) |>
-  mutate(shootings = ifelse(is.na(shootings) & year >= 2006, 0, shootings))
+  mutate(shootings = ifelse(is.na(shootings) & year >= 2006, 0, shootings)) # shootings that occur after 2006 and missing are 0 values
 
 saveRDS(crimes_final, "data/crimes_final.rds")
 
