@@ -1,4 +1,4 @@
-NYC Precinct Murder + Shootings + Crimes Augmented Synthetic Control
+NYC Precinct Murder + Shootings + Crims Augmented Synthetic Control
 Analysis
 ================
 
@@ -14,7 +14,7 @@ Analysis
 
 ## Exploratory Plots
 
-![](README_files/figure-gfm/unnamed-chunk-1-1.png)![](README_files/figure-gfm/unnamed-chunk-1-2.png)![](README_files/figure-gfm/unnamed-chunk-1-3.png)![](README_files/figure-gfm/unnamed-chunk-1-4.png)![](README_files/figure-gfm/unnamed-chunk-1-5.png)![](README_files/figure-gfm/unnamed-chunk-1-6.png)
+![](README_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-1-2.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-1-3.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-1-4.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-1-5.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-1-6.png)<!-- -->
 
 ## MURDER
 
@@ -26,7 +26,7 @@ Analysis
     ##     t_int = t_int, data = data, progfunc = "Ridge", scm = ..2, 
     ##     fixedeff = ..4, lambda = 0.2)
     ## 
-    ## Average ATT Estimate (p Value for Joint Null):  0.00543   ( 0.72 )
+    ## Average ATT Estimate (p Value for Joint Null):  0.00543   ( 0.69 )
     ## L2 Imbalance: 0.038
     ## Percent improvement from uniform weights: 93.5%
     ## 
@@ -35,16 +35,16 @@ Analysis
     ## Inference type: Conformal inference
     ## 
     ##  Time Estimate 95% CI Lower Bound 95% CI Upper Bound p Value
-    ##  2015    0.048             -0.556              0.652   0.919
-    ##  2016    0.218             -0.386              0.822   0.623
+    ##  2015    0.048             -0.556              0.652   0.902
+    ##  2016    0.218             -0.386              0.822   0.619
     ##  2017    0.025             -0.579              0.629   1.000
-    ##  2018    0.021             -0.583              0.625   0.908
-    ##  2019   -0.441             -1.045              0.163   0.470
-    ##  2020   -0.365             -0.969              0.239   0.546
-    ##  2021   -0.247             -0.851              0.357   0.542
+    ##  2018    0.021             -0.583              0.625   0.903
+    ##  2019   -0.441             -1.045              0.163   0.431
+    ##  2020   -0.365             -0.969              0.239   0.532
+    ##  2021   -0.247             -0.851              0.357   0.541
     ##  2022   -0.038             -0.642              0.566   1.000
-    ##  2023    0.169             -0.435              0.773   0.628
-    ##  2024    0.665              0.000              1.269   0.352
+    ##  2023    0.169             -0.435              0.773   0.620
+    ##  2024    0.665              0.000              1.269   0.359
 
 ![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
@@ -56,7 +56,7 @@ Analysis
     ##     t_int = t_int, data = data, progfunc = "None", scm = ..2, 
     ##     fixedeff = ..3)
     ## 
-    ## Average ATT Estimate (p Value for Joint Null):  0.00658   ( 0.8 )
+    ## Average ATT Estimate (p Value for Joint Null):  0.00658   ( 0.79 )
     ## L2 Imbalance: 0.286
     ## Percent improvement from uniform weights: 51.6%
     ## 
@@ -65,22 +65,22 @@ Analysis
     ## Inference type: Conformal inference
     ## 
     ##  Time Estimate 95% CI Lower Bound 95% CI Upper Bound p Value
-    ##  2015    0.067             -0.407              0.540   0.910
+    ##  2015    0.067             -0.407              0.540   0.907
     ##  2016    0.155             -0.318              0.628   0.906
-    ##  2017    0.062             -0.412              0.535   0.834
-    ##  2018    0.062             -0.411              0.535   0.829
-    ##  2019   -0.361             -0.834              0.112   0.530
-    ##  2020   -0.310             -0.783              0.164   0.831
-    ##  2021   -0.132             -0.605              0.342   0.907
-    ##  2022   -0.094             -0.567              0.380   0.910
-    ##  2023    0.106             -0.367              0.579   0.927
-    ##  2024    0.510              0.000              0.984   0.449
+    ##  2017    0.062             -0.412              0.535   0.792
+    ##  2018    0.062             -0.411              0.535   0.820
+    ##  2019   -0.361             -0.834              0.112   0.537
+    ##  2020   -0.310             -0.783              0.164   0.804
+    ##  2021   -0.132             -0.605              0.342   0.893
+    ##  2022   -0.094             -0.567              0.380   0.912
+    ##  2023    0.106             -0.367              0.579   0.909
+    ##  2024    0.510              0.000              0.984   0.474
 
 ![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 ## SHOOTINGS
 
-### Using ridge to allow for extrapolation (lambda selected through a visual analysis)
+### Using ridge to allow for extraploation (lambda selected through a visual analysis)
 
     ## 
     ## Call:

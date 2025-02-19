@@ -12,7 +12,7 @@ library(tidyverse)
 library(augsynth)
 ```
 
-## Selectig Precincts:
+## Selecting Precincts:
 - Cases: precincts 43, 47, 49
 - Controls: chosen based on similar trends/patterns in shootings and murders in the pre-treatment period
   - Bronx: precincts 40, 41, 42, 44, 46, 52
@@ -48,8 +48,9 @@ hist(crimes_final$crime_total)
 
 ## MURDER
 
-### Using ridge to allow for extraploation (lambda selected through a visual analysis)
+### Using ridge to allow for extrapolation (lambda selected through a visual analysis)
 ```{r}
+set.seed(5)
 # MURDER
 syn_murder <- augsynth(log_murder ~ case, 
                        unit = PCT, 
@@ -67,6 +68,7 @@ plot(syn_muder_summ)
 
 ### Not allowing for extrapolation (basic model)
 ```{r}
+set.seed(5)
 # MURDER (non extrapolate)
 syn_murder <- augsynth(log_murder ~ case, 
                        unit = PCT, 
@@ -85,6 +87,8 @@ plot(syn_muder_summ)
 
 ### Using ridge to allow for extraploation (lambda selected through a visual analysis)
 ```{r}
+set.seed(5)
+
 # SHOOTINGS
 syn_shootings <- augsynth(log_shootings ~ case, 
                        unit = PCT, 
@@ -105,6 +109,8 @@ plot(syn_shootings_summ)
 
 ### Not allowing for extrapolation (basic model)
 ```{r}
+set.seed(5)
+
 # SHOOTINGS (non extrapolate)
 syn_shootings_basic <- augsynth(log_shootings ~ case, 
                           unit = PCT, 
@@ -121,8 +127,10 @@ plot(syn_shootings_summ_basic)
 
 ### CRIMES (Murder + Rape + Assault + Robbery)
 
-### Using ridge to allow for extraploation (lambda selected through a visual analysis)
+### Using ridge to allow for extrapolation (lambda selected through a visual analysis)
 ```{r}
+set.seed(5)
+
 syn_crime_total <- augsynth(log_crime_total ~ case, 
                             unit = PCT, 
                             time = year,
@@ -143,6 +151,8 @@ plot(syn_crime_total_summ)
 ### Not allowing for extrapolation (basic model)
 
 ```{r}
+set.seed(5)
+
 # crime_total (non extrapolate)
 syn_crime_total_basic <- augsynth(log_crime_total ~ case, 
                                   unit = PCT, 
