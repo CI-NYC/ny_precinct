@@ -1,8 +1,8 @@
-NYC Precinct Murder + Shootings + Crims Augmented Synthetic Control
+NYC Precinct Murder + Shootings + Crimes Augmented Synthetic Control
 Analysis
 ================
 
-## Selectig Precincts:
+## Selecting Precincts:
 
 - Cases: precincts 43, 47, 49
 - Controls: chosen based on similar trends/patterns in shootings and
@@ -18,7 +18,7 @@ Analysis
 
 ## MURDER
 
-### Using ridge to allow for extraploation (lambda selected through a visual analysis)
+### Using ridge to allow for extrapolation (lambda selected through a visual analysis)
 
     ## 
     ## Call:
@@ -80,7 +80,7 @@ Analysis
 
 ## SHOOTINGS
 
-### Using ridge to allow for extraploation (lambda selected through a visual analysis)
+### Using ridge to allow for extrapolation (lambda selected through a visual analysis)
 
     ## 
     ## Call:
@@ -142,7 +142,7 @@ Analysis
 
 ### CRIMES (Murder + Rape + Assault + Robbery)
 
-### Using ridge to allow for extraploation (lambda selected through a visual analysis)
+### Using ridge to allow for extrapolation (lambda selected through a visual analysis)
 
     ## 
     ## Call:
