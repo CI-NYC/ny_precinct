@@ -1,4 +1,4 @@
-NYC Precinct Murder + Shootings + Crims Augmented Synthetic Control
+NYC Precinct Murder + Shootings + Crimes Augmented Synthetic Control
 Analysis
 ================
 
