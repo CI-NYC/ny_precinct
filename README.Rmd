@@ -15,17 +15,18 @@ library(augsynth)
 ## Selecting Precincts:
 - Cases: precincts 43, 47, 49
 - Controls: chosen based on similar trends/patterns in shootings and murders in the pre-treatment period
-  - Bronx: precincts 40, 41, 42, 44, 46, 52
-  - Manhattan: precincts 25, 32
-  - Brooklyn: precincts 69, 70, 71, 73, 75
-  - Queens: precincts 101, 103, 105, 113
+  - Bronx: precincts 41, 42, 44, 52
+  - Manhattan: precincts 25
+  - Brooklyn: precincts 69, 70, 71, 73
+  - Queens: precincts 101, 105, 113
+- Excluding data in 2014 due to rollout of treatment
 
 ## Exploratory Plots
 ```{r}
 crimes_final <- readRDS("data/crimes_final.rds") |>
   filter(!is.na(case)) |>
-  filter(PCT %in% c("40", "41", "42", "44", "46", "48", "52", "25", "32", "73", "75",
-                    "60", "67", "69", "70", "71", "101", "103", "105", "113",
+  filter(PCT %in% c( "41", "42", "44", "48", "52", "25", "73",
+                    "60", "67", "69", "70", "71", "101", "105", "113",
                     "43", "47", "49")) |> # cases
   rowwise() |>
    mutate(crime_total = sum(murder, robbery, rape, assault, na.rm = TRUE))
@@ -43,7 +44,7 @@ crimes_final <- crimes_final |>
 
 hist(crimes_final$log_murder)
 hist(crimes_final$log_shootings)
-hist(crimes_final$crime_total)
+hist(crimes_final$log_crime_total)
 ```
 
 ## MURDER
@@ -61,7 +62,7 @@ syn_murder <- augsynth(log_murder ~ case,
                        lambda = 0.2, 
                        fixedeff = T)
 
-syn_muder_summ <- summary(syn_murder)
+syn_muder_summ <- summary(syn_murder, inf_type = "jackknife+")
 syn_muder_summ
 plot(syn_muder_summ)
 ```
@@ -78,7 +79,7 @@ syn_murder <- augsynth(log_murder ~ case,
                        scm = T, 
                        fixedeff = T)
 
-syn_muder_summ <- summary(syn_murder)
+syn_muder_summ <- summary(syn_murder, inf_type = "jackknife+")
 syn_muder_summ
 plot(syn_muder_summ)
 ```
@@ -160,7 +161,7 @@ syn_crime_total_basic <- augsynth(log_crime_total ~ case,
                                   data = crimes_final,
                                   progfunc = "None", 
                                   scm = T, 
-                                  fixedeff = F)
+                                  fixedeff = T)
 
 syn_crime_total_summ_basic <- summary(syn_crime_total_basic, inf_type = "jackknife+")
 syn_crime_total_summ_basic
@@ -169,5 +170,5 @@ plot(syn_crime_total_summ_basic)
 
 ## Conclusion:
 - Treatments may have temporarily reduced shootings in the immediate period following roll-out (until 2016) but there is little evidence to suggest that this has had a lasting impact in reducing shootings when comparing to similar precincts
-- There is little evidence that these treatments lowered crime compared to similar precincts, and in fact, there may be evidnece to suggest that crime has increased in these 3 precincts compared to other areas
+- There is little evidence that these treatments lowered crime compared to similar precincts, and in fact, there may be evidence to suggest that crime has increased in these 3 precincts compared to other areas
 

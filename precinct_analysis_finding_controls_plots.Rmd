@@ -58,9 +58,10 @@ ggplotly(murder_plot_limited, tooltip = "text")
 ### Among likely control precincts
 ```{r, echo = FALSE}
 crimes_final_likely_controls <- crimes_final |>
-  filter(PCT %in% c("cases_avg", "40", "41", "42", "44", "46", "48", "52", "25", "32", "73", "75",
-                    "60", "67", "69", "70", "71", "101", "103", "105", "113"#,
-                    #"23, "79", "81", "83                   
+  filter(PCT %in% c("cases_avg", "41", "42", "44", "48", "52", "25", "73",
+                    "60", "67", "69", "70", "71", "101", "105", "113"#,
+                    #"23, "79", "81", "83,
+                    #"32", "40", "46", "75", "79", "103
                     )) |>
   filter(year <= 2013)
 

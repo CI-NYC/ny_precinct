@@ -7,10 +7,11 @@ Analysis
 - Cases: precincts 43, 47, 49
 - Controls: chosen based on similar trends/patterns in shootings and
   murders in the pre-treatment period
-  - Bronx: precincts 40, 41, 42, 44, 46, 52
-  - Manhattan: precincts 25, 32
-  - Brooklyn: precincts 69, 70, 71, 73, 75
-  - Queens: precincts 101, 103, 105, 113
+  - Bronx: precincts 41, 42, 44, 52
+  - Manhattan: precincts 25
+  - Brooklyn: precincts 69, 70, 71, 73
+  - Queens: precincts 101, 105, 113
+- Excluding data in 2014 due to rollout of treatment
 
 ## Exploratory Plots
 
@@ -26,25 +27,25 @@ Analysis
     ##     t_int = t_int, data = data, progfunc = "Ridge", scm = ..2, 
     ##     fixedeff = ..4, lambda = 0.2)
     ## 
-    ## Average ATT Estimate (p Value for Joint Null):  0.00543   ( 0.69 )
-    ## L2 Imbalance: 0.038
-    ## Percent improvement from uniform weights: 93.5%
+    ## Average ATT Estimate:  0.010 
+    ## L2 Imbalance: 0.066
+    ## Percent improvement from uniform weights: 89%
     ## 
-    ## Avg Estimated Bias: 0.001
+    ## Avg Estimated Bias: -0.006
     ## 
-    ## Inference type: Conformal inference
+    ## Inference type: Jackknife+ over time periods
     ## 
-    ##  Time Estimate 95% CI Lower Bound 95% CI Upper Bound p Value
-    ##  2015    0.048             -0.556              0.652   0.902
-    ##  2016    0.218             -0.386              0.822   0.619
-    ##  2017    0.025             -0.579              0.629   1.000
-    ##  2018    0.021             -0.583              0.625   0.903
-    ##  2019   -0.441             -1.045              0.163   0.431
-    ##  2020   -0.365             -0.969              0.239   0.532
-    ##  2021   -0.247             -0.851              0.357   0.541
-    ##  2022   -0.038             -0.642              0.566   1.000
-    ##  2023    0.169             -0.435              0.773   0.620
-    ##  2024    0.665              0.000              1.269   0.359
+    ##  Time Estimate 95% CI Lower Bound 95% CI Upper Bound
+    ##  2015    0.101             -0.289              0.480
+    ##  2016    0.151             -0.341              0.479
+    ##  2017    0.027             -0.436              0.374
+    ##  2018   -0.010             -0.267              0.580
+    ##  2019   -0.447             -1.113             -0.104
+    ##  2020   -0.290             -0.639              0.333
+    ##  2021   -0.257             -0.583              0.303
+    ##  2022    0.034             -0.269              0.610
+    ##  2023    0.116             -0.359              0.530
+    ##  2024    0.679              0.181              1.122
 
 ![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
@@ -56,25 +57,25 @@ Analysis
     ##     t_int = t_int, data = data, progfunc = "None", scm = ..2, 
     ##     fixedeff = ..3)
     ## 
-    ## Average ATT Estimate (p Value for Joint Null):  0.00658   ( 0.79 )
-    ## L2 Imbalance: 0.286
-    ## Percent improvement from uniform weights: 51.6%
+    ## Average ATT Estimate:  0.004 
+    ## L2 Imbalance: 0.292
+    ## Percent improvement from uniform weights: 51.5%
     ## 
     ## Avg Estimated Bias: NA
     ## 
-    ## Inference type: Conformal inference
+    ## Inference type: Jackknife+ over time periods
     ## 
-    ##  Time Estimate 95% CI Lower Bound 95% CI Upper Bound p Value
-    ##  2015    0.067             -0.407              0.540   0.907
-    ##  2016    0.155             -0.318              0.628   0.906
-    ##  2017    0.062             -0.412              0.535   0.792
-    ##  2018    0.062             -0.411              0.535   0.820
-    ##  2019   -0.361             -0.834              0.112   0.537
-    ##  2020   -0.310             -0.783              0.164   0.804
-    ##  2021   -0.132             -0.605              0.342   0.893
-    ##  2022   -0.094             -0.567              0.380   0.912
-    ##  2023    0.106             -0.367              0.579   0.909
-    ##  2024    0.510              0.000              0.984   0.474
+    ##  Time Estimate 95% CI Lower Bound 95% CI Upper Bound
+    ##  2015    0.102             -0.258              0.502
+    ##  2016    0.118             -0.464              0.485
+    ##  2017    0.033             -0.426              0.414
+    ##  2018    0.102             -0.175              0.663
+    ##  2019   -0.403             -1.025              0.033
+    ##  2020   -0.286             -0.653              0.329
+    ##  2021   -0.155             -0.490              0.376
+    ##  2022   -0.027             -0.335              0.537
+    ##  2023    0.054             -0.429              0.473
+    ##  2024    0.506              0.092              0.955
 
 ![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
@@ -88,25 +89,25 @@ Analysis
     ##     t_int = t_int, data = data, progfunc = "Ridge", scm = ..2, 
     ##     fixedeff = ..4, lambda = 0.03)
     ## 
-    ## Average ATT Estimate:  0.230 
-    ## L2 Imbalance: 0.010
-    ## Percent improvement from uniform weights: 97.2%
+    ## Average ATT Estimate:  0.228 
+    ## L2 Imbalance: 0.020
+    ## Percent improvement from uniform weights: 95%
     ## 
-    ## Avg Estimated Bias: -0.053
+    ## Avg Estimated Bias: -0.010
     ## 
     ## Inference type: Jackknife+ over time periods
     ## 
     ##  Time Estimate 95% CI Lower Bound 95% CI Upper Bound
-    ##  2015    0.290             -0.464              0.415
-    ##  2016   -0.510             -1.005             -0.161
-    ##  2017    0.143             -0.257              0.582
-    ##  2018    0.738             -0.173              1.040
-    ##  2019   -0.310             -0.665              0.176
-    ##  2020    0.003             -0.514              0.240
-    ##  2021    0.309             -0.270              0.468
-    ##  2022    0.473             -0.259              0.580
-    ##  2023    0.624             -0.111              0.743
-    ##  2024    0.544             -0.552              0.778
+    ##  2015    0.193             -0.301              0.363
+    ##  2016   -0.452             -0.768             -0.081
+    ##  2017    0.001             -0.123              0.469
+    ##  2018    1.035              0.133              1.139
+    ##  2019   -0.510             -0.661             -0.038
+    ##  2020    0.158             -0.347              0.258
+    ##  2021    0.238             -0.223              0.531
+    ##  2022    0.374             -0.138              0.625
+    ##  2023    0.523              0.052              0.883
+    ##  2024    0.721             -0.062              0.885
 
 ![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
@@ -118,25 +119,25 @@ Analysis
     ##     t_int = t_int, data = data, progfunc = "None", scm = ..2, 
     ##     fixedeff = ..3)
     ## 
-    ## Average ATT Estimate:  0.177 
-    ## L2 Imbalance: 0.134
-    ## Percent improvement from uniform weights: 64.1%
+    ## Average ATT Estimate:  0.218 
+    ## L2 Imbalance: 0.149
+    ## Percent improvement from uniform weights: 62.2%
     ## 
     ## Avg Estimated Bias: NA
     ## 
     ## Inference type: Jackknife+ over time periods
     ## 
     ##  Time Estimate 95% CI Lower Bound 95% CI Upper Bound
-    ##  2015    0.284             -0.469              0.429
-    ##  2016   -0.655             -1.062             -0.171
-    ##  2017    0.176             -0.247              0.593
-    ##  2018    0.639             -0.180              0.905
-    ##  2019   -0.256             -0.641              0.215
-    ##  2020    0.014             -0.528              0.232
-    ##  2021    0.233             -0.256              0.421
-    ##  2022    0.396             -0.300              0.550
-    ##  2023    0.444             -0.134              0.640
-    ##  2024    0.497             -0.535              0.739
+    ##  2015    0.207             -0.330              0.373
+    ##  2016   -0.570             -0.864             -0.156
+    ##  2017    0.159             -0.100              0.553
+    ##  2018    0.867              0.094              0.967
+    ##  2019   -0.392             -0.637             -0.007
+    ##  2020    0.116             -0.392              0.235
+    ##  2021    0.278             -0.134              0.481
+    ##  2022    0.397             -0.210              0.595
+    ##  2023    0.397             -0.051              0.771
+    ##  2024    0.720              0.017              0.830
 
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
@@ -150,25 +151,25 @@ Analysis
     ##     t_int = t_int, data = data, progfunc = "Ridge", scm = ..2, 
     ##     fixedeff = ..4, lambda = 0.005)
     ## 
-    ## Average ATT Estimate:  0.105 
-    ## L2 Imbalance: 0.024
-    ## Percent improvement from uniform weights: 90.5%
+    ## Average ATT Estimate:  0.121 
+    ## L2 Imbalance: 0.062
+    ## Percent improvement from uniform weights: 74.1%
     ## 
-    ## Avg Estimated Bias: 0.042
+    ## Avg Estimated Bias: 0.137
     ## 
     ## Inference type: Jackknife+ over time periods
     ## 
     ##  Time Estimate 95% CI Lower Bound 95% CI Upper Bound
-    ##  2015    0.048             -0.082              0.202
-    ##  2016    0.117             -0.015              0.317
-    ##  2017    0.121             -0.036              0.379
-    ##  2018    0.039             -0.091              0.355
-    ##  2019    0.057             -0.059              0.347
-    ##  2020   -0.003             -0.082              0.291
-    ##  2021    0.046              0.010              0.343
-    ##  2022    0.210              0.101              0.462
-    ##  2023    0.277              0.087              0.531
-    ##  2024    0.144              0.020              0.418
+    ##  2015    0.061             -0.274              0.319
+    ##  2016    0.215             -0.033              0.421
+    ##  2017    0.162             -0.037              0.459
+    ##  2018    0.088             -0.073              0.468
+    ##  2019    0.029             -0.109              0.450
+    ##  2020    0.125             -0.083              0.439
+    ##  2021    0.069             -0.081              0.478
+    ##  2022    0.051             -0.201              0.574
+    ##  2023    0.239             -0.185              0.721
+    ##  2024    0.176             -0.173              0.584
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
@@ -180,25 +181,25 @@ Analysis
     ##     t_int = t_int, data = data, progfunc = "None", scm = ..2, 
     ##     fixedeff = ..3)
     ## 
-    ## Average ATT Estimate:  0.143 
-    ## L2 Imbalance: 0.070
-    ## Percent improvement from uniform weights: 76.3%
+    ## Average ATT Estimate:  0.258 
+    ## L2 Imbalance: 0.106
+    ## Percent improvement from uniform weights: 55.2%
     ## 
     ## Avg Estimated Bias: NA
     ## 
     ## Inference type: Jackknife+ over time periods
     ## 
     ##  Time Estimate 95% CI Lower Bound 95% CI Upper Bound
-    ##  2015    0.042             -0.058              0.169
-    ##  2016    0.120              0.021              0.250
-    ##  2017    0.131              0.050              0.296
-    ##  2018    0.113              0.027              0.268
-    ##  2019    0.105              0.024              0.252
-    ##  2020    0.086              0.002              0.228
-    ##  2021    0.164              0.073              0.302
-    ##  2022    0.249              0.119              0.371
-    ##  2023    0.263              0.115              0.407
-    ##  2024    0.152              0.023              0.326
+    ##  2015    0.116             -0.189              0.212
+    ##  2016    0.220             -0.055              0.296
+    ##  2017    0.214             -0.018              0.325
+    ##  2018    0.179             -0.008              0.336
+    ##  2019    0.159             -0.014              0.331
+    ##  2020    0.203             -0.066              0.315
+    ##  2021    0.279             -0.015              0.412
+    ##  2022    0.327             -0.036              0.494
+    ##  2023    0.434             -0.032              0.584
+    ##  2024    0.450             -0.058              0.565
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
@@ -209,5 +210,5 @@ Analysis
   suggest that this has had a lasting impact in reducing shootings when
   comparing to similar precincts
 - There is little evidence that these treatments lowered crime compared
-  to similar precincts, and in fact, there may be evidnece to suggest
+  to similar precincts, and in fact, there may be evidence to suggest
   that crime has increased in these 3 precincts compared to other areas
