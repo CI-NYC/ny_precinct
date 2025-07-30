@@ -1,8 +1,104 @@
-NYC Precinct Murder + Shootings + Crims Augmented Synthetic Control
-Analysis
+NYC Precinct Murder + Shootings + Crimes DiD + Augmented Synthetic
+Control Analysis
 ================
 
-## Selecting Precincts:
+## Difference in Difference Analysis
+
+- Use shooting data (precincts 43, 47, 49) from 2004-2024 to conduct a
+  difference in difference analysis
+
+![](README_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+
+### Removing 2014
+
+    ## 
+    ## Call:
+    ## aggte(MP = res, type = "dynamic")
+    ## 
+    ## Reference: Callaway, Brantly and Pedro H.C. Sant'Anna.  "Difference-in-Differences with Multiple Time Periods." Journal of Econometrics, Vol. 225, No. 2, pp. 200-230, 2021. <https://doi.org/10.1016/j.jeconom.2020.12.001>, <https://arxiv.org/abs/1803.09015> 
+    ## 
+    ## 
+    ## Overall summary of ATT's based on event-study/dynamic aggregation:  
+    ##     ATT    Std. Error     [ 95%  Conf. Int.] 
+    ##  0.1204        0.2715    -0.4118      0.6525 
+    ## 
+    ## 
+    ## Dynamic Effects:
+    ##  Event time Estimate Std. Error [95% Simult.  Conf. Band] 
+    ##         -10  -0.3924     0.4932       -1.4389      0.6541 
+    ##          -9   0.7198     0.3907       -0.1092      1.5488 
+    ##          -8  -0.1590     0.1804       -0.5417      0.2237 
+    ##          -7  -0.0362     0.2483       -0.5631      0.4908 
+    ##          -6   0.2583     0.1744       -0.1118      0.6284 
+    ##          -5  -0.2055     0.2036       -0.6374      0.2265 
+    ##          -4  -0.1317     0.4439       -1.0736      0.8103 
+    ##          -3   0.2518     0.3924       -0.5808      1.0845 
+    ##          -2  -0.1379     0.2073       -0.5778      0.3020 
+    ##           0  -0.1174     0.6078       -1.4071      1.1723 
+    ##           1   0.5973     0.3240       -0.0901      1.2846 
+    ##           2  -0.0152     0.5709       -1.2267      1.1962 
+    ##           3   0.1642     0.7501       -1.4275      1.7558 
+    ##           4   0.0169     0.3107       -0.6423      0.6761 
+    ##           5   0.3325     0.2261       -0.1473      0.8123 
+    ##           6   0.0498     0.3125       -0.6134      0.7129 
+    ##           7   0.5749     0.3803       -0.2321      1.3819 
+    ##           8   0.1206     0.3997       -0.7276      0.9688 
+    ##           9  -0.5196     0.3489       -1.2599      0.2207 
+    ## ---
+    ## Signif. codes: `*' confidence band does not cover 0
+    ## 
+    ## Control Group:  Not Yet Treated,  Anticipation Periods:  0
+    ## Estimation Method:  Doubly Robust
+
+![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+
+### Anticipating 2014
+
+    ## 
+    ## Call:
+    ## aggte(MP = res_anticipation, type = "dynamic")
+    ## 
+    ## Reference: Callaway, Brantly and Pedro H.C. Sant'Anna.  "Difference-in-Differences with Multiple Time Periods." Journal of Econometrics, Vol. 225, No. 2, pp. 200-230, 2021. <https://doi.org/10.1016/j.jeconom.2020.12.001>, <https://arxiv.org/abs/1803.09015> 
+    ## 
+    ## 
+    ## Overall summary of ATT's based on event-study/dynamic aggregation:  
+    ##     ATT    Std. Error     [ 95%  Conf. Int.] 
+    ##  0.1204        0.2739    -0.4165      0.6573 
+    ## 
+    ## 
+    ## Dynamic Effects:
+    ##  Event time Estimate Std. Error [95% Simult.  Conf. Band] 
+    ##         -10  -0.3924     0.4932       -1.5120      0.7272 
+    ##          -9   0.7198     0.3907       -0.1670      1.6067 
+    ##          -8  -0.1590     0.1804       -0.5685      0.2504 
+    ##          -7  -0.0362     0.2483       -0.5999      0.5276 
+    ##          -6   0.2583     0.1744       -0.1376      0.6543 
+    ##          -5  -0.2055     0.2036       -0.6675      0.2566 
+    ##          -4  -0.1317     0.4439       -1.1394      0.8760 
+    ##          -3   0.2518     0.3924       -0.6390      1.1427 
+    ##          -2  -0.1379     0.2073       -0.6085      0.3327 
+    ##          -1  -0.1025     0.3857       -0.9779      0.7730 
+    ##           0  -0.1174     0.5538       -1.3746      1.1398 
+    ##           1   0.5973     0.3392       -0.1728      1.3673 
+    ##           2  -0.0152     0.6695       -1.5351      1.5046 
+    ##           3   0.1642     0.8037       -1.6604      1.9887 
+    ##           4   0.0169     0.3060       -0.6778      0.7116 
+    ##           5   0.3325     0.2525       -0.2405      0.9056 
+    ##           6   0.0498     0.3125       -0.6597      0.7592 
+    ##           7   0.5749     0.3803       -0.2884      1.4382 
+    ##           8   0.1206     0.3847       -0.7527      0.9939 
+    ##           9  -0.5196     0.3358       -1.2819      0.2428 
+    ## ---
+    ## Signif. codes: `*' confidence band does not cover 0
+    ## 
+    ## Control Group:  Not Yet Treated,  Anticipation Periods:  1
+    ## Estimation Method:  Doubly Robust
+
+![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+## Synthetic Control Analysis (old)
+
+### Selecting Precincts:
 
 - Cases: precincts 43, 47, 49
 - Controls: chosen based on similar trends/patterns in shootings and
@@ -13,13 +109,13 @@ Analysis
   - Queens: precincts 101, 105, 113
 - Excluding data in 2014 due to rollout of treatment
 
-## Exploratory Plots
+### Exploratory Plots
 
-![](README_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-1-2.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-1-3.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-1-4.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-1-5.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-1-6.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-4-3.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-4-4.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-4-5.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-4-6.png)<!-- -->
 
-## MURDER
+### MURDER
 
-### Using ridge to allow for extrapolation (lambda selected through a visual analysis)
+#### Using ridge to allow for extrapolation (lambda selected through a visual analysis)
 
     ## 
     ## Call:
@@ -47,7 +143,7 @@ Analysis
     ##  2023    0.116             -0.359              0.530
     ##  2024    0.679              0.181              1.122
 
-![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ### Not allowing for extrapolation (basic model)
 
@@ -77,11 +173,11 @@ Analysis
     ##  2023    0.054             -0.429              0.473
     ##  2024    0.506              0.092              0.955
 
-![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
-## SHOOTINGS
+### SHOOTINGS
 
-### Using ridge to allow for extraploation (lambda selected through a visual analysis)
+#### Using ridge to allow for extraploation (lambda selected through a visual analysis)
 
     ## 
     ## Call:
@@ -109,9 +205,9 @@ Analysis
     ##  2023    0.523              0.052              0.883
     ##  2024    0.721             -0.062              0.885
 
-![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
-### Not allowing for extrapolation (basic model)
+#### Not allowing for extrapolation (basic model)
 
     ## 
     ## Call:
@@ -139,11 +235,11 @@ Analysis
     ##  2023    0.397             -0.051              0.771
     ##  2024    0.720              0.017              0.830
 
-![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 ### CRIMES (Murder + Rape + Assault + Robbery)
 
-### Using ridge to allow for extrapolation (lambda selected through a visual analysis)
+#### Using ridge to allow for extrapolation (lambda selected through a visual analysis)
 
     ## 
     ## Call:
@@ -171,9 +267,9 @@ Analysis
     ##  2023    0.239             -0.185              0.721
     ##  2024    0.176             -0.173              0.584
 
-![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
-### Not allowing for extrapolation (basic model)
+#### Not allowing for extrapolation (basic model)
 
     ## 
     ## Call:
@@ -201,9 +297,9 @@ Analysis
     ##  2023    0.434             -0.032              0.584
     ##  2024    0.450             -0.058              0.565
 
-![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
-## Conclusion:
+### Conclusion:
 
 - Treatments may have temporarily reduced shootings in the immediate
   period following roll-out (until 2016) but there is little evidence to

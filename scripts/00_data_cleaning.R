@@ -29,12 +29,7 @@ crimes_final <- crimes |>
 #precinct_to_cd <- read_excel("data/precinct_to_cd.xlsx")
 
 ## shooting data
-shooting_historic <- read_csv("data/NYPD_Shooting_Incident_Data__Historic.csv") |>
-  mutate(OCCUR_DATE = mdy(OCCUR_DATE),
-         year = year(OCCUR_DATE)) |>
-  relocate(year, .after = OCCUR_DATE)
-  
-shooting_current <- read_csv("data/NYPD_Shooting_Incident_Data__Year_To_Date.csv") |>
+shooting_historic <- read_csv("data/NYPD_Shooting_Incident_Data__Historic__20250724.csv") |>
   mutate(OCCUR_DATE = mdy(OCCUR_DATE),
          year = year(OCCUR_DATE)) |>
   relocate(year, .after = OCCUR_DATE)
@@ -46,13 +41,7 @@ shooting_historic_grouped <- shooting_historic |>
   complete(PRECINCT, year) |>
   arrange(year)
 
-shooting_current_grouped <- shooting_current |>
-  group_by(PRECINCT, year) |> 
-  summarize(shootings = n()) |>
-  arrange(year)
-
 shootings_all_grouped <- shooting_historic_grouped |>
-  merge(shooting_current_grouped, all = TRUE) |>
   arrange(PRECINCT, year) |>
   mutate(PRECINCT = as.character(PRECINCT)) |>
   rename("PCT" = "PRECINCT")
