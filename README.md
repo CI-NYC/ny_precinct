@@ -96,6 +96,73 @@ Control Analysis
 
 ![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
+## Synthetic Control Analysis (new data)
+
+- Only look at SUV areas of precints 43, 47, 39 for years 2006-2024
+- Use other precincts as controls (see below for slection method)
+
+### SHOOTINGS
+
+#### Using ridge to allow for extraploation (lambda selected through a visual analysis)
+
+    ## 
+    ## Call:
+    ## single_augsynth(form = form, unit = !!enquo(unit), time = !!enquo(time), 
+    ##     t_int = t_int, data = data, progfunc = "Ridge", scm = ..2, 
+    ##     fixedeff = ..4, lambda = 0.03)
+    ## 
+    ## Average ATT Estimate:  0.013 
+    ## L2 Imbalance: 0.038
+    ## Percent improvement from uniform weights: 91%
+    ## 
+    ## Avg Estimated Bias: 0.014
+    ## 
+    ## Inference type: Jackknife+ over time periods
+    ## 
+    ##  Time Estimate 95% CI Lower Bound 95% CI Upper Bound
+    ##  2015   -0.224             -0.693              0.410
+    ##  2016    0.189             -0.396              0.770
+    ##  2017   -0.230             -0.464              0.421
+    ##  2018    0.255             -0.583              0.852
+    ##  2019   -0.553             -0.831              0.066
+    ##  2020   -0.030             -0.675              0.462
+    ##  2021   -0.116             -0.540              0.475
+    ##  2022    0.341             -0.128              0.929
+    ##  2023    0.715              0.207              1.360
+    ##  2024   -0.216             -0.842              0.407
+
+![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+#### Not allowing for extrapolation (basic model)
+
+    ## 
+    ## Call:
+    ## single_augsynth(form = form, unit = !!enquo(unit), time = !!enquo(time), 
+    ##     t_int = t_int, data = data, progfunc = "None", scm = ..2, 
+    ##     fixedeff = ..3)
+    ## 
+    ## Average ATT Estimate:  0.027 
+    ## L2 Imbalance: 0.228
+    ## Percent improvement from uniform weights: 46.5%
+    ## 
+    ## Avg Estimated Bias: NA
+    ## 
+    ## Inference type: Jackknife+ over time periods
+    ## 
+    ##  Time Estimate 95% CI Lower Bound 95% CI Upper Bound
+    ##  2015   -0.189             -0.695              0.500
+    ##  2016   -0.003             -0.495              0.635
+    ##  2017    0.084             -0.412              0.569
+    ##  2018    0.079             -0.674              0.739
+    ##  2019   -0.400             -0.771              0.191
+    ##  2020   -0.095             -0.689              0.443
+    ##  2021    0.001             -0.491              0.510
+    ##  2022    0.381             -0.165              1.023
+    ##  2023    0.524              0.028              1.207
+    ##  2024   -0.116             -0.762              0.529
+
+![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
 ## Synthetic Control Analysis (old)
 
 ### Selecting Precincts:
@@ -111,7 +178,7 @@ Control Analysis
 
 ### Exploratory Plots
 
-![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-4-3.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-4-4.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-4-5.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-4-6.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-6-3.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-6-4.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-6-5.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-6-6.png)<!-- -->
 
 ### MURDER
 
@@ -143,7 +210,7 @@ Control Analysis
     ##  2023    0.116             -0.359              0.530
     ##  2024    0.679              0.181              1.122
 
-![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ### Not allowing for extrapolation (basic model)
 
@@ -173,7 +240,7 @@ Control Analysis
     ##  2023    0.054             -0.429              0.473
     ##  2024    0.506              0.092              0.955
 
-![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 ### SHOOTINGS
 
@@ -205,7 +272,7 @@ Control Analysis
     ##  2023    0.523              0.052              0.883
     ##  2024    0.721             -0.062              0.885
 
-![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 #### Not allowing for extrapolation (basic model)
 
@@ -235,7 +302,7 @@ Control Analysis
     ##  2023    0.397             -0.051              0.771
     ##  2024    0.720              0.017              0.830
 
-![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ### CRIMES (Murder + Rape + Assault + Robbery)
 
@@ -267,7 +334,7 @@ Control Analysis
     ##  2023    0.239             -0.185              0.721
     ##  2024    0.176             -0.173              0.584
 
-![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 #### Not allowing for extrapolation (basic model)
 
@@ -297,7 +364,7 @@ Control Analysis
     ##  2023    0.434             -0.032              0.584
     ##  2024    0.450             -0.058              0.565
 
-![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ### Conclusion:
 
