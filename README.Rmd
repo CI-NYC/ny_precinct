@@ -3,6 +3,8 @@ title: "NYC Precinct Murder + Shootings + Crimes DiD + Augmented Synthetic Contr
 output: github_document
 ---
 
+## NOTE: for precinct by precinct analysis, see `by_precinct` folder
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
@@ -281,7 +283,7 @@ syn_shootings_summ_basic
 plot(syn_shootings_summ_basic)
 ```
 
-### CRIMES (Murder + Rape + Assault + Robbery)
+### CRIMES (Murder + Rape + Assault + Robbery) -- NOTE: did not include shootings because these may be double counted in murder
 
 #### Using ridge to allow for extrapolation (lambda selected through a visual analysis)
 ```{r}

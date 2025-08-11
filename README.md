@@ -2,6 +2,8 @@ NYC Precinct Murder + Shootings + Crimes DiD + Augmented Synthetic
 Control Analysis
 ================
 
+## NOTE: for precinct by precinct analysis, see `by_precinct` folder
+
 ## Difference in Difference Analysis
 
 - Use shooting data (precincts 43, 47, 49) from 2004-2024 to conduct a
@@ -304,7 +306,7 @@ Control Analysis
 
 ![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
-### CRIMES (Murder + Rape + Assault + Robbery)
+### CRIMES (Murder + Rape + Assault + Robbery) – NOTE: did not include shootings because these may be double counted in murder
 
 #### Using ridge to allow for extrapolation (lambda selected through a visual analysis)
 
