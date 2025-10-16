@@ -1,20 +1,9 @@
----
-title: "Shootings DiD by Precinct"
-output: github_document
-date: "2025-08-11"
----
-```{r}
-knitr::opts_chunk$set(warning = FALSE, message = FALSE)
-knitr::opts_chunk$set(message = FALSE)
+library(tidyverse)
+library(augsynth)
+library(did)
+library(readxl)
 
-suppressPackageStartupMessages(library(tidyverse))
-suppressPackageStartupMessages(library(augsynth))
-suppressPackageStartupMessages(library(did))
-suppressPackageStartupMessages(library(readxl))
-```
-
-```{r}
-crimes_final <- readRDS(here::here("data/crimes_final.rds")) |>
+crimes_final <- readRDS("data/crimes_final.rds") |>
   filter(!is.na(case)) |>
   filter(PCT %in% c( "41", "42", "44", "48", "52", "25", "73",
                      "60", "67", "69", "70", "71", "101", "105", "113",
@@ -24,17 +13,17 @@ crimes_final <- readRDS(here::here("data/crimes_final.rds")) |>
 
 ## Difference in Difference Analysis
 
-dat49 <- read_excel(here::here("data/SUV vs NYPD PCNT DATA_2004_2024.xlsx"), sheet = 1) |>
+dat49 <- read_excel("data/SUV vs NYPD PCNT DATA_2004_2024.xlsx", sheet = 1) |>
   janitor::clean_names() |>
   mutate(across(everything(), ~ as.numeric(gsub("[^0-9.-]", "", .)))) |>
   mutate(PCT = 49)
 
-dat47 <- read_excel(here::here("data/SUV vs NYPD PCNT DATA_2004_2024.xlsx"), sheet = 2) |>
+dat47 <- read_excel("data/SUV vs NYPD PCNT DATA_2004_2024.xlsx", sheet = 2) |>
   janitor::clean_names() |>
   mutate(across(everything(), ~ as.numeric(gsub("[^0-9.-]", "", .)))) |>
   mutate(PCT = 47)
 
-dat43 <- read_excel(here::here("data/SUV vs NYPD PCNT DATA_2004_2024.xlsx"), sheet = 3) |>
+dat43 <- read_excel("data/SUV vs NYPD PCNT DATA_2004_2024.xlsx", sheet = 3) |>
   janitor::clean_names() |>
   mutate(across(everything(), ~ as.numeric(gsub("[^0-9.-]", "", .)))) |>
   mutate(PCT = 43)
@@ -59,15 +48,15 @@ for (p in c("43", "47", "49"))
 if (p == "43")
 {
   merged_dat_new <- merged_dat |>
-    filter(PCT == "43" | treated == 0)
+    filter(PCT == "43")
 } else if (p == "47")
 {
   merged_dat_new <- merged_dat |>
-    filter(PCT == "47" | treated == 0)
+    filter(PCT == "47")
 } else
 {
   merged_dat_new <- merged_dat |>
-    filter(PCT == "49" | treated == 0)
+    filter(PCT == "49")
 }
 
 
@@ -84,10 +73,7 @@ res <- att_gt(yname = "log_y",
 )
 
 # aggregate
-print(paste0("Precinct ", p))
 res_dynamic <- aggte(res, type = "dynamic")
 summary(res_dynamic)
 print(ggdid(res_dynamic))
 }
-```
-

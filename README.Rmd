@@ -114,18 +114,18 @@ ggdid(res_dynamic_anticipation)
 - Only look at SUV areas of precints 43, 47, 39 for years 2006-2024
 - Use other precincts as controls (see below for slection method)
 
-### SHOOTINGS
+### ALLOWING FOR 43, 47, 49 AS CONTROLS
 
 #### Using ridge to allow for extraploation (lambda selected through a visual analysis)
 ```{r}
 temp <- merged_dat |>
-  filter(treated == 1) |>
   filter(year >= 2006) |>
-  select(PCT, year, y, treated) |>
-  mutate(treated = ifelse(year <= 2014, 0, 1)) |>
+  select(PCT, GROUP, year, y, treated) |>
+  mutate(treated = ifelse(year > 2014 & treated == 1, 1, 0)) |>
   rename("shootings" = "y",
          "case" = "treated") |>
-  mutate(PCT = as.character(PCT)) |>
+  mutate(PCT = as.character(GROUP)) |>
+  select(-GROUP) |>
   as.data.frame()
 
 
@@ -174,6 +174,69 @@ syn_shootings_summ_basic_new <- summary(syn_shootings_basic_new, inf_type = "jac
 syn_shootings_summ_basic_new
 plot(syn_shootings_summ_basic_new)
 ```
+
+### NOT ALLOWING FOR 43, 47, 49 AS CONTROLS
+
+#### Using ridge to allow for extraploation (lambda selected through a visual analysis)
+```{r}
+temp <- merged_dat |>
+  filter(treated == 1) |>
+  filter(year >= 2006) |>
+  select(PCT, year, y, treated) |>
+  mutate(treated = ifelse(year <= 2014, 0, 1)) |>
+  rename("shootings" = "y",
+         "case" = "treated") |>
+  mutate(PCT = as.character(PCT)) |>
+  as.data.frame()
+
+
+
+shootings_dat <- crimes_final |>
+  filter(!(PCT %in% c(43, 47, 49))) |>
+  filter(year >= 2006) |>
+  select(PCT, year, shootings, case) |>
+  merge(temp, all = TRUE) |>
+  mutate(log_shootings = log(shootings)) |>
+  filter(year != 2014)
+
+set.seed(5)
+
+# SHOOTINGS
+syn_shootings_new <- augsynth(log_shootings ~ case, 
+                       unit = PCT, 
+                       time = year,
+                       data = shootings_dat,
+                       progfunc = "Ridge", 
+                       scm = T, 
+                       lambda = 0.03, 
+                       fixedeff = T)
+
+syn_shootings_summ_new <- summary(syn_shootings_new, inf_type = "jackknife+")
+syn_shootings_summ_new
+plot(syn_shootings_summ_new)
+
+# plots cross-validation
+#plot(syn_shootings, cv = T)
+```
+
+#### Not allowing for extrapolation (basic model)
+```{r}
+set.seed(5)
+
+# SHOOTINGS (non extrapolate)
+syn_shootings_basic_new <- augsynth(log_shootings ~ case, 
+                       unit = PCT, 
+                       time = year,
+                       data = shootings_dat,
+                       progfunc = "None", 
+                       scm = T, 
+                       fixedeff = T)
+
+syn_shootings_summ_basic_new <- summary(syn_shootings_basic_new, inf_type = "jackknife+")
+syn_shootings_summ_basic_new
+plot(syn_shootings_summ_basic_new)
+```
+
 
 ## Synthetic Control Analysis (old)
 

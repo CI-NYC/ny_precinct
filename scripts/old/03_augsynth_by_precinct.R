@@ -1,0 +1,230 @@
+library(tidyverse)
+library(augsynth)
+library(did)
+library(readxl)
+
+crimes_final <- readRDS("data/crimes_final.rds") |>
+  filter(!is.na(case)) |>
+  filter(PCT %in% c( "41", "42", "44", "48", "52", "25", "73",
+                     "60", "67", "69", "70", "71", "101", "105", "113",
+                     "43", "47", "49")) |> # cases
+  rowwise() |>
+  mutate(crime_total = sum(murder, robbery, rape, assault, na.rm = TRUE))
+
+
+## Difference in Difference Analysis
+
+dat49 <- read_excel("data/SUV vs NYPD PCNT DATA_2004_2024.xlsx", sheet = 1) |>
+  janitor::clean_names() |>
+  mutate(across(everything(), ~ as.numeric(gsub("[^0-9.-]", "", .)))) |>
+  mutate(PCT = 49)
+
+dat47 <- read_excel("data/SUV vs NYPD PCNT DATA_2004_2024.xlsx", sheet = 2) |>
+  janitor::clean_names() |>
+  mutate(across(everything(), ~ as.numeric(gsub("[^0-9.-]", "", .)))) |>
+  mutate(PCT = 47)
+
+dat43 <- read_excel("data/SUV vs NYPD PCNT DATA_2004_2024.xlsx", sheet = 3) |>
+  janitor::clean_names() |>
+  mutate(across(everything(), ~ as.numeric(gsub("[^0-9.-]", "", .)))) |>
+  mutate(PCT = 43)
+
+merged_dat <- dat49 |>
+  merge(dat47, all = TRUE) |>
+  merge(dat43, all = TRUE) |>
+  pivot_longer(cols = c(suv_target_area, pcnt_other_areas), 
+               names_to = "group", 
+               values_to = "y") |>
+  mutate(log_y = log(y)) |>
+  mutate(treated = ifelse(group == "suv_target_area", 1, 0)) |>
+  mutate(treated_year = ifelse(treated == 1, 2015, 0)) |>
+  arrange(treated, PCT, year) |>
+  mutate(GROUP = as.numeric(paste0(PCT, treated)))
+
+## ALLOWING FOR OTHER PRECINCTS TO BE CONTROLS
+
+## Synthetic Control Analysis (new data)
+
+### SHOOTINGS
+
+#### Using ridge to allow for extraploation (lambda selected through a visual analysis)
+
+for (p in c("43", "47", "49"))
+{
+  if (p == "43")
+  {
+    temp <- merged_dat |>
+      filter((PCT == "43" & treated == 1) | (PCT == "47" & treated == 0) | (PCT == "49" & treated == 0)) |>
+      filter(year >= 2006) |>
+      select(PCT, year, y, treated) |>
+      mutate(treated = ifelse(year <= 2014, 0, 1)) |>
+      rename("shootings" = "y",
+             "case" = "treated") |>
+      mutate(PCT = as.character(PCT)) |>
+      as.data.frame()
+    
+  } else if (p == "47")
+  {
+    temp <- merged_dat |>
+      filter((PCT == "47" & treated == 1) | (PCT == "43" & treated == 0) | (PCT == "49" & treated == 0)) |>
+      filter(year >= 2006) |>
+      select(PCT, year, y, treated) |>
+      mutate(treated = ifelse(year <= 2014, 0, 1)) |>
+      rename("shootings" = "y",
+             "case" = "treated") |>
+      mutate(PCT = as.character(PCT)) |>
+      as.data.frame()
+    
+  } else
+  {
+    temp <- merged_dat |>
+      filter((PCT == "49" & treated == 1) | (PCT == "43" & treated == 0) | (PCT == "47" & treated == 0)) |>
+      filter(year >= 2006) |>
+      select(PCT, year, y, treated) |>
+      mutate(treated = ifelse(year <= 2014, 0, 1)) |>
+      rename("shootings" = "y",
+             "case" = "treated") |>
+      mutate(PCT = as.character(PCT)) |>
+      as.data.frame()
+  }
+
+
+shootings_dat <- crimes_final |>
+  filter(!(PCT %in% c(43, 47, 49))) |>
+  filter(year >= 2006) |>
+  select(PCT, year, shootings, case) |>
+  merge(temp, all = TRUE) |>
+  mutate(log_shootings = log(shootings)) |>
+  filter(year != 2014)
+
+set.seed(5)
+
+# SHOOTINGS
+syn_shootings_new <- augsynth(log_shootings ~ case, 
+                              unit = PCT, 
+                              time = year,
+                              data = shootings_dat,
+                              progfunc = "Ridge", 
+                              scm = T, 
+                              lambda = 0.03, 
+                              fixedeff = T)
+
+syn_shootings_summ_new <- summary(syn_shootings_new, inf_type = "jackknife+")
+syn_shootings_summ_new
+plot(syn_shootings_summ_new)
+
+# plots cross-validation
+#plot(syn_shootings, cv = T)
+
+
+#### Not allowing for extrapolation (basic model)
+
+set.seed(5)
+
+# SHOOTINGS (non extrapolate)
+syn_shootings_basic_new <- augsynth(log_shootings ~ case, 
+                                    unit = PCT, 
+                                    time = year,
+                                    data = shootings_dat,
+                                    progfunc = "None", 
+                                    scm = T, 
+                                    fixedeff = T)
+
+syn_shootings_summ_basic_new <- summary(syn_shootings_basic_new, inf_type = "jackknife+")
+syn_shootings_summ_basic_new
+plot(syn_shootings_summ_basic_new)
+}
+
+## NOT ALLOWING FOR OTHER PRECINCTS TO BE CONTROLS
+## Synthetic Control Analysis (new data)
+
+### SHOOTINGS
+
+#### Using ridge to allow for extraploation (lambda selected through a visual analysis)
+
+for (p in c("43", "47", "49"))
+{
+  
+  if (p == "43")
+  {
+    temp <- merged_dat |>
+      filter((PCT == "43" & treated == 1)) |>
+      filter(year >= 2006) |>
+      select(PCT, year, y, treated) |>
+      mutate(treated = ifelse(year <= 2014, 0, 1)) |>
+      rename("shootings" = "y",
+             "case" = "treated") |>
+      mutate(PCT = as.character(PCT)) |>
+      as.data.frame()
+    
+  } else if (p == "47")
+  {
+    temp <- merged_dat |>
+      filter((PCT == "47" & treated == 1)) |>
+      filter(year >= 2006) |>
+      select(PCT, year, y, treated) |>
+      mutate(treated = ifelse(year <= 2014, 0, 1)) |>
+      rename("shootings" = "y",
+             "case" = "treated") |>
+      mutate(PCT = as.character(PCT)) |>
+      as.data.frame()
+    
+  } else
+  {
+    temp <- merged_dat |>
+      filter((PCT == "49" & treated == 1)) |>
+      filter(year >= 2006) |>
+      select(PCT, year, y, treated) |>
+      mutate(treated = ifelse(year <= 2014, 0, 1)) |>
+      rename("shootings" = "y",
+             "case" = "treated") |>
+      mutate(PCT = as.character(PCT)) |>
+      as.data.frame()
+  }
+  
+  
+  shootings_dat <- crimes_final |>
+    filter(!(PCT %in% c(43, 47, 49))) |>
+    filter(year >= 2006) |>
+    select(PCT, year, shootings, case) |>
+    merge(temp, all = TRUE) |>
+    mutate(log_shootings = log(shootings)) |>
+    filter(year != 2014)
+  
+  set.seed(5)
+  
+  # SHOOTINGS
+  syn_shootings_new <- augsynth(log_shootings ~ case, 
+                                unit = PCT, 
+                                time = year,
+                                data = shootings_dat,
+                                progfunc = "Ridge", 
+                                scm = T, 
+                                lambda = 0.03, 
+                                fixedeff = T)
+  
+  syn_shootings_summ_new <- summary(syn_shootings_new, inf_type = "jackknife+")
+  syn_shootings_summ_new
+  plot(syn_shootings_summ_new)
+  
+  # plots cross-validation
+  #plot(syn_shootings, cv = T)
+  
+  
+  #### Not allowing for extrapolation (basic model)
+  
+  set.seed(5)
+  
+  # SHOOTINGS (non extrapolate)
+  syn_shootings_basic_new <- augsynth(log_shootings ~ case, 
+                                      unit = PCT, 
+                                      time = year,
+                                      data = shootings_dat,
+                                      progfunc = "None", 
+                                      scm = T, 
+                                      fixedeff = T)
+  
+  syn_shootings_summ_basic_new <- summary(syn_shootings_basic_new, inf_type = "jackknife+")
+  syn_shootings_summ_basic_new
+  plot(syn_shootings_summ_basic_new)
+}
