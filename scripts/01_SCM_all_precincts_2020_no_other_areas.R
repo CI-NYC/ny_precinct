@@ -8,10 +8,10 @@ dat49 <- read_excel("data/SUV vs NYPD PCNT DATA_2004_2024.xlsx", sheet = 1) |>
   mutate(across(everything(), ~ as.numeric(gsub("[^0-9.-]", "", .)))) |>
   mutate(precinct = 49)
 
-# dat47 <- read_excel("data/SUV vs NYPD PCNT DATA_2004_2024.xlsx", sheet = 2) |>
-#   janitor::clean_names() |>
-#   mutate(across(everything(), ~ as.numeric(gsub("[^0-9.-]", "", .)))) |>
-#   mutate(precinct = 47)
+dat47 <- read_excel("data/SUV vs NYPD PCNT DATA_2004_2024.xlsx", sheet = 2) |>
+  janitor::clean_names() |>
+  mutate(across(everything(), ~ as.numeric(gsub("[^0-9.-]", "", .)))) |>
+  mutate(precinct = 47)
 
 dat43 <- read_excel("data/SUV vs NYPD PCNT DATA_2004_2024.xlsx", sheet = 3) |>
   janitor::clean_names() |>
@@ -19,7 +19,7 @@ dat43 <- read_excel("data/SUV vs NYPD PCNT DATA_2004_2024.xlsx", sheet = 3) |>
   mutate(precinct = 43)
 
 merged_dat <- dat49 |>
-  #merge(dat47, all = TRUE) |>
+  merge(dat47, all = TRUE) |>
   merge(dat43, all = TRUE) |>
   pivot_longer(cols = c(suv_target_area, pcnt_other_areas), 
                names_to = "group", 
@@ -32,9 +32,9 @@ merged_dat <- dat49 |>
   mutate(group = ifelse(group == "pcnt_other_areas", "Other Area", "SUV Target Area")) 
 
 merged_dat_sub <- merged_dat |>
-  filter(year <= 2020)
+  filter(year <= 2024)
 
-plot <- ggplot(merged_dat, aes(x = year, y = y, color = group)) +
+plot <- ggplot(merged_dat |> filter(precinct != "47"), aes(x = year, y = y, color = group)) +
   geom_line(size = 1) +
   facet_wrap(~ precinct) +
   theme_minimal() +
@@ -48,12 +48,6 @@ plot <- ggplot(merged_dat, aes(x = year, y = y, color = group)) +
           color = "black", fill = "gray95", linewidth = 1
         ))
 
-ggsave(filename = "figures_overleaf_102225/raw_shootings.pdf",
-       width = 9,
-       height = 6,
-       units = "in",
-       plot = plot)
-
 cases <- merged_dat |>
   filter(year >= 2006) |>
   select(precinct, GROUP, year, log_shootings, y, treated) |>
@@ -61,7 +55,7 @@ cases <- merged_dat |>
   mutate(precinct = as.character(GROUP)) |>
   select(-c(GROUP, treated)) |>
   as.data.frame() |>
-  filter(year <= 2020)
+  filter(year <= 2024)
 
 # getting control data
 dat <- read_csv("data/shootings_with_takedowns.csv") |>
@@ -72,7 +66,7 @@ dat <- read_csv("data/shootings_with_takedowns.csv") |>
                                                         projectRestore == TRUE ~ 1,
                                                         yearCure == year ~ 1, 
                                                         TRUE ~ 0))  |>
-  filter(year <= 2020)
+  filter(year <= 2024)
 
 grouped_dat <- dat |>
   group_by(year, precinct) |>
@@ -86,17 +80,21 @@ grouped_dat <- dat |>
 
 all_combos <- expand_grid(
   precinct = unique(grouped_dat$precinct),
-  year = 2006:2020
+  year = 2006:2024
 )
 
-grouped_dat_full <- all_combos |>
+grouped_dat_full_incl_47 <- all_combos |>
   left_join(grouped_dat, by = c("precinct", "year")) |>
   ungroup() |>
   mutate(log_shootings = replace_na(log_shootings, 0),
          intervention = replace_na(0, 0)) |>
   merge(cases, all = TRUE) |>
   filter(year != 2014) |>
-  filter(!precinct %in% c("43", "49", "121", "120", "122"))
+  filter(!precinct %in% c("43", "49", "121", "120", "122", "123", "430", "490"))
+
+grouped_dat_full <- grouped_dat_full_incl_47 |>
+  filter(!precinct %in% c("471", "470"))
+
 
 # avg_df <- grouped_dat_full |>
 #   filter(precinct %in% c("431", "491")) |>
@@ -140,13 +138,13 @@ grouped_dat_43 <- grouped_dat_full |>
   filter(precinct != "491")
 
 syn_shootings_43 <- augsynth(log_shootings ~ intervention, 
-                              unit = precinct, 
-                              time = year,
-                              data = grouped_dat_43,
-                              progfunc = "ridge", 
-                              scm = T, 
-                              lambda = 1, 
-                              fixedeff = T)
+                             unit = precinct, 
+                             time = year,
+                             data = grouped_dat_43,
+                             progfunc = "ridge", 
+                             scm = T, 
+                             lambda = 1, 
+                             fixedeff = T)
 
 syn_shootings_summ_43 <- summary(syn_shootings_43, inf_type = "jackknife+")
 syn_shootings_summ_43
@@ -170,60 +168,19 @@ syn_shootings_summ_49 <- summary(syn_shootings_49, inf_type = "jackknife+")
 syn_shootings_summ_49
 plot(syn_shootings_summ_49)
 
-# what if we remove precincts with 0?
-grouped_dat_full <- grouped_dat_full |>
-  group_by(precinct) |>
-  mutate(has_0 = ifelse(any(is.na(y)), 1, 0)) |>
-  filter(has_0 != 1) |>
-  ungroup() |>
-  mutate(log_y = log(y))
+# SHOOTINGS PCT 47
+grouped_dat_47 <- grouped_dat_full_incl_47 |>
+  filter(!(precinct %in% c("431", "491", "470")))
 
-# SHOOTINGS
-syn_shootings_new <- augsynth(log_y ~ intervention, 
-                              unit = precinct, 
-                              time = year,
-                              data = grouped_dat_full,
-                              progfunc = "ridge", 
-                              scm = T, 
-                              lambda = 1, 
-                              fixedeff = T)
-
-syn_shootings_summ_new <- summary(syn_shootings_new, inf_type = "jackknife+")
-syn_shootings_summ_new
-plot(syn_shootings_summ_new)
-
-# SHOOTINGS PCT 43
-
-grouped_dat_43 <- grouped_dat_full |>
-  filter(precinct != "491")
-
-syn_shootings_43 <- augsynth(log_y ~ intervention, 
+syn_shootings_47 <- augsynth(log_shootings ~ intervention, 
                              unit = precinct, 
                              time = year,
-                             data = grouped_dat_43,
-                             progfunc = "ridge", 
+                             data = grouped_dat_47,
+                             progfunc = "none", 
                              scm = T, 
-                             lambda = 1, 
+                             #lambda = 20, 
                              fixedeff = T)
 
-syn_shootings_summ_43 <- summary(syn_shootings_43, inf_type = "jackknife+")
-syn_shootings_summ_43
-plot(syn_shootings_summ_43)
-
-# SHOOTINGS PCT 49
-
-grouped_dat_49 <- grouped_dat_full |>
-  filter(precinct != "431")
-
-syn_shootings_49 <- augsynth(log_y ~ intervention, 
-                             unit = precinct, 
-                             time = year,
-                             data = grouped_dat_49,
-                             progfunc = "Ridge", 
-                             scm = T, 
-                             lambda = 1, 
-                             fixedeff = T)
-
-syn_shootings_summ_49 <- summary(syn_shootings_49, inf_type = "jackknife+")
-syn_shootings_summ_49
-plot(syn_shootings_summ_49)
+syn_shootings_summ_47 <- summary(syn_shootings_47, inf_type = "jackknife+")
+syn_shootings_summ_47
+plot(syn_shootings_summ_47)
