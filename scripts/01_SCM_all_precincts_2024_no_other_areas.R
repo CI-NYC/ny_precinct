@@ -32,7 +32,7 @@ merged_dat <- dat49 |>
   mutate(group = ifelse(group == "pcnt_other_areas", "Other Area", "SUV Target Area")) 
 
 merged_dat_sub <- merged_dat |>
-  filter(year <= 2020)
+  filter(year <= 2024)
 
 plot <- ggplot(merged_dat |> filter(precinct != "47"), aes(x = year, y = y, color = group)) +
   geom_line(size = 1) +
@@ -48,12 +48,6 @@ plot <- ggplot(merged_dat |> filter(precinct != "47"), aes(x = year, y = y, colo
           color = "black", fill = "gray95", linewidth = 1
         ))
 
-ggsave(filename = "figures_overleaf_102225/raw_shootings.pdf",
-       width = 9,
-       height = 6,
-       units = "in",
-       plot = plot)
-
 cases <- merged_dat |>
   filter(year >= 2006) |>
   select(precinct, GROUP, year, log_shootings, y, treated) |>
@@ -61,7 +55,7 @@ cases <- merged_dat |>
   mutate(precinct = as.character(GROUP)) |>
   select(-c(GROUP, treated)) |>
   as.data.frame() |>
-  filter(year <= 2020)
+  filter(year <= 2024)
 
 # getting control data
 dat <- read_csv("data/shootings_with_takedowns.csv") |>
@@ -72,7 +66,7 @@ dat <- read_csv("data/shootings_with_takedowns.csv") |>
                                                         projectRestore == TRUE ~ 1,
                                                         yearCure == year ~ 1, 
                                                         TRUE ~ 0))  |>
-  filter(year <= 2020)
+  filter(year <= 2024)
 
 grouped_dat <- dat |>
   group_by(year, precinct) |>
@@ -84,10 +78,9 @@ grouped_dat <- dat |>
   filter((any_intervention == 0)) |>
   select(-any_intervention)
 
-# 55 unique precincts
 all_combos <- expand_grid(
   precinct = unique(grouped_dat$precinct),
-  year = 2006:2020
+  year = 2006:2024
 )
 
 grouped_dat_full_incl_47 <- all_combos |>
@@ -97,7 +90,7 @@ grouped_dat_full_incl_47 <- all_combos |>
          intervention = replace_na(0, 0)) |>
   merge(cases, all = TRUE) |>
   filter(year != 2014) |>
-  filter(!precinct %in% c("43", "49", "121", "120", "122", "123", "430", "490")) # due to boundary changes
+  filter(!precinct %in% c("43", "49", "121", "120", "122", "123", "430", "490", "470"))
 
 grouped_dat_full <- grouped_dat_full_incl_47 |>
   filter(!precinct %in% c("471", "470"))
@@ -135,10 +128,20 @@ syn_shootings_new <- augsynth(log_shootings ~ intervention,
                               #lambda = 1, 
                               fixedeff = T)
 
-syn_shootings_summ_new <- summary(syn_shootings_new, inf_type = "jackknife+")
-syn_shootings_summ_new
-plot(syn_shootings_summ_new)
+saveRDS(syn_shootings_new$weights, "weights/weights_43_49_2024_no_other_areas.rds")
 
+syn_shootings_summ_new <- summary(syn_shootings_new, inf_type = "jackknife+")
+saveRDS(syn_shootings_summ_new, "models/model_43_49_2024_no_other_areas.rds")
+
+syn_shootings_summ_new
+
+plot_43_39 <- plot(syn_shootings_summ_new)
+
+ggsave(filename = "figures_overleaf_111725/plot_43_49_2024.pdf",
+       width = 9,
+       height = 6,
+       units = "in",
+       plot = plot_43_39)
 # SHOOTINGS PCT 43
 
 grouped_dat_43 <- grouped_dat_full |>
@@ -153,9 +156,19 @@ syn_shootings_43 <- augsynth(log_shootings ~ intervention,
                              lambda = 1, 
                              fixedeff = T)
 
+saveRDS(syn_shootings_43$weights, "weights/weights_43_2024_no_other_areas.rds")
+
 syn_shootings_summ_43 <- summary(syn_shootings_43, inf_type = "jackknife+")
+saveRDS(syn_shootings_summ_43, "models/model_43_2024_no_other_areas.rds")
 syn_shootings_summ_43
-plot(syn_shootings_summ_43)
+
+plot_43 <- plot(syn_shootings_summ_43)
+
+ggsave(filename = "figures_overleaf_111725/plot_43_2024.pdf",
+       width = 9,
+       height = 6,
+       units = "in",
+       plot = plot_43)
 
 # SHOOTINGS PCT 49
 
@@ -171,9 +184,19 @@ syn_shootings_49 <- augsynth(log_shootings ~ intervention,
                              lambda = 1, 
                              fixedeff = T)
 
+saveRDS(syn_shootings_49$weights, "weights/weights_49_2024_no_other_areas.rds")
+
 syn_shootings_summ_49 <- summary(syn_shootings_49, inf_type = "jackknife+")
+saveRDS(syn_shootings_summ_49, "models/model_49_2024_no_other_areas.rds")
 syn_shootings_summ_49
-plot(syn_shootings_summ_49)
+
+plot_49 <- plot(syn_shootings_summ_49)
+
+ggsave(filename = "figures_overleaf_111725/plot_49_2024.pdf",
+       width = 9,
+       height = 6,
+       units = "in",
+       plot = plot_49)
 
 # SHOOTINGS PCT 47
 grouped_dat_47 <- grouped_dat_full_incl_47 |>
@@ -188,6 +211,16 @@ syn_shootings_47 <- augsynth(log_shootings ~ intervention,
                              #lambda = 20, 
                              fixedeff = T)
 
+saveRDS(syn_shootings_47$weights, "weights/weights_47_2024_no_other_areas.rds")
+
 syn_shootings_summ_47 <- summary(syn_shootings_47, inf_type = "jackknife+")
+saveRDS(syn_shootings_summ_47, "models/model_47_2024_no_other_areas.rds")
 syn_shootings_summ_47
-plot(syn_shootings_summ_47)
+
+plot_47 <- plot(syn_shootings_summ_47)
+
+ggsave(filename = "figures_overleaf_111725/plot_47_2024.pdf",
+       width = 9,
+       height = 6,
+       units = "in",
+       plot = plot_47)
